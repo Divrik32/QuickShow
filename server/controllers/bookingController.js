@@ -1,5 +1,4 @@
-// import Booking from "../models/booking.js";
-import Booking from "../models/booking.js";
+import Booking from "../models/Booking.js";
 import Show from "../models/Show.js";
 import stripe from "stripe";
 
