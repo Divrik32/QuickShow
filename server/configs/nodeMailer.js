@@ -1,34 +1,32 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransporter({
-    host: "smtp-relay.brevo.com",
-    port: 587,
-    secure: false, // true for port 465 (SSL), false for 587 (STARTTLS)
-    auth: {
-        user: process.env.SMTP_USER?.trim(), // Trim extra spaces
-        pass: process.env.SMTP_PASS?.trim(),
-    },
-    tls: {
-        rejectUnauthorized: false // Self-signed certs ke liye (optional)
-    },
-    debug: true, // Test ke time true rakho, production false
-    logger: true // Logs dekho error debug ke liye
+const transporter = nodemailer.createTransport({
+  host: "smtp-relay.brevo.com",
+  port: 587,             // or 465 if you want secure SSL
+  secure: false,         // true for port 465, false for 587
+  auth: {
+    user: process.env.SMTP_USER, // Brevo SMTP user
+    pass: process.env.SMTP_PASS, // Brevo SMTP password
+  },
+  tls: {
+    rejectUnauthorized: false, // helps avoid some TLS issues
+  },
 });
 
 const sendEmail = async ({ to, subject, body }) => {
-    try {
-        const response = await transporter.sendMail({
-            from: `"No Reply" <${process.env.SENDER_EMAIL}>`, // Better format
-            to,
-            subject,
-            html: body,
-        });
-        console.log('Email sent:', response.messageId);
-        return response;
-    } catch (error) {
-        console.error('Email error:', error);
-        throw error;
-    }
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.SENDER_EMAIL,
+      to,
+      subject,
+      html: body,
+    });
+    console.log("Email sent:", info.messageId);
+    return info;
+  } catch (err) {
+    console.error("Error sending email:", err);
+    throw err;
+  }
 };
 
 export default sendEmail;
